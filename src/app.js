@@ -1,6 +1,8 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import helmet from "helmet";
 import authRoutes from "./routes/auth.js";
 import cartRoutes from "./routes/cart.js";
@@ -8,13 +10,22 @@ import orderRoutes from "./routes/orders.js";
 import productRoutes from "./routes/products.js";
 
 const app = express();
+const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const allowedOrigins = (process.env.CLIENT_ORIGIN || "http://localhost:8000")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
 app.disable("x-powered-by");
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        "img-src": ["'self'", "data:", "https://images.unsplash.com"],
+      },
+    },
+  }),
+);
 app.use(
   cors({
     origin(origin, callback) {
@@ -35,6 +46,15 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.get("/", (_request, response) => {
+  response.sendFile(path.join(webRoot, "index.html"));
+});
+app.get("/styles.css", (_request, response) => {
+  response.sendFile(path.join(webRoot, "styles.css"));
+});
+app.get("/script.js", (_request, response) => {
+  response.sendFile(path.join(webRoot, "script.js"));
+});
 
 app.use((request, response) => {
   response.status(404).json({ error: `Route not found: ${request.method} ${request.path}` });

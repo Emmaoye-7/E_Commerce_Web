@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Morrow E-Commerce
 
 A responsive storefront and a Node.js API backed by MongoDB.
@@ -10,43 +9,17 @@ A responsive storefront and a Node.js API backed by MongoDB.
 - Password hashing and JWT bearer-token authentication
 - Administrator-only product creation, updates, and deletion
 - Transactional order creation with price snapshots and a configurable shipping fee
+- Responsive storefront with product search, category filters, sorting, and product details
+- Browser-local shopping bag
 
 ## Run the storefront
 
 Open `index.html` directly in a browser, or serve this folder:
-=======
-# Morrow E-Commerce Web App
-
-A modern, responsive storefront built for a clean shopping experience. This project showcases a boutique-style e-commerce landing page with filtering, search, sorting, and a shopping bag/cart flow.
-
-## Features
-
-- Elegant hero section and brand-focused design
-- Product listing with category filters
-- Search and sorting controls
-- Add-to-cart interactions with local storage persistence
-- Mobile-friendly navigation and responsive layout
-- Product detail interaction and cart drawer overview
-
-## Tech Stack
-
-- HTML
-- CSS
-- JavaScript
-
-## Run the Project
-
-1. Open the project folder in your browser.
-2. Open `index.html` directly in a browser, or serve the folder with a local web server.
-
-Example with Python:
->>>>>>> 28a0141374c409761374017224b0c3926add437d
 
 ```bash
 python -m http.server 8000
 ```
 
-<<<<<<< HEAD
 Visit `http://localhost:8000`.
 
 ## Run the API
@@ -62,6 +35,19 @@ Requirements: Node.js 18+ and MongoDB. Order creation uses MongoDB transactions,
 Run the API checks with `npm test`.
 
 The seed command inserts the eight products already shown in the storefront without overwriting existing products. If both admin environment variables are set, it creates the admin account or grants admin role to that email. Keep `.env` private. The default order shipping fee is `$8`, with free shipping at `$75` or more; set `SHIPPING_FEE` to change the fee.
+
+## Deploy to Render
+
+The included `render.yaml` configures one Render web service to serve both the storefront and API. MongoDB must be hosted separately; MongoDB Atlas is one option.
+
+1. Create a MongoDB Atlas database and a database user with a strong password. Render's free web services do not provide static outbound IPs. For a free deployment, Atlas network access may need `0.0.0.0/0`, which permits network connections from any IP; protect the database with a strong unique password, least-privilege database user, and TLS. For stricter IP allowlisting, use a hosting plan with fixed egress IPs.
+2. Push this project to GitHub, then in Render choose **New → Blueprint** and select the repository containing `render.yaml`.
+3. In the Blueprint environment prompt, set `MONGODB_URI` to the Atlas connection URI. Render generates `JWT_SECRET`. Do not commit these secrets.
+4. Deploy the Blueprint and wait for the service health check to pass. The Render URL serves the storefront; API endpoints use the same domain under `/api`.
+5. To seed the catalog and provision an administrator, set `MONGODB_URI`, `ADMIN_EMAIL`, and a strong `ADMIN_PASSWORD` (10–72 characters) in your local, git-ignored `.env`, then run `npm run seed` from this project. Confirm products appear at `/api/products`, then sign in through `/api/auth/login` with the configured admin credentials and test a protected route.
+6. Run `npm test` locally before pushing changes. After deployment, verify the Render URL, `/api/health`, product listing, registration/login, cart, and order flows. Order placement requires Atlas transaction support.
+
+The storefront's shopping bag and checkout button are still browser-local/demo behavior; they are not yet connected to the API's authenticated cart and order endpoints. Production API checkout must be tested separately until that frontend integration is added. No payment provider is configured.
 
 ## API
 
@@ -94,20 +80,7 @@ Product fields: `name`, `category`, `price`, `description`, `image`, and `alt`; 
 - `index.html`, `styles.css`, `script.js` — static storefront
 - `server.js`, `src/` — API server, routes, middleware, and MongoDB models
 - `scripts/seed.js` — initial catalog and administrator setup
-=======
-Then visit:
-
-```text
-http://localhost:8000
-```
-
-## Project Structure
-
-- `index.html` — main page structure
-- `styles.css` — visual design and layout
-- `script.js` — product data, filters, cart logic, and interactivity
 
 ## Description
 
 Morrow is a lightweight e-commerce web app designed to mimic a premium lifestyle brand storefront. It focuses on a refined shopping experience with simple navigation, product discovery tools, and a convenient bag experience for everyday online shopping.
->>>>>>> 28a0141374c409761374017224b0c3926add437d

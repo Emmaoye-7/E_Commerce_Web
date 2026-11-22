@@ -25,6 +25,27 @@ test("health endpoint reports readiness", async () => {
   assert.deepEqual(await response.json(), { status: "ok" });
 });
 
+test("storefront and its assets are served by the production app", async () => {
+  for (const [path, contentType] of [
+    ["/", /text\/html/],
+    ["/styles.css", /text\/css/],
+    ["/script.js", /javascript/],
+  ]) {
+    const response = await fetch(`${baseUrl}${path}`);
+    assert.equal(response.status, 200, `${path} should be served`);
+    assert.match(response.headers.get("content-type") || "", contentType);
+    if (path === "/") {
+      assert.match(
+        response.headers.get("content-security-policy") || "",
+        /img-src[^;]*https:\/\/images\.unsplash\.com/,
+      );
+    }
+  }
+
+  const packageResponse = await fetch(`${baseUrl}/package.json`);
+  assert.equal(packageResponse.status, 404);
+});
+
 test("registration rejects invalid credentials before database access", async () => {
   const response = await fetch(`${baseUrl}/api/auth/register`, {
     method: "POST",
