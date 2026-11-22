@@ -10,6 +10,11 @@ async function start() {
   if (!mongoUri) {
     throw new Error("MONGODB_URI must be set.");
   }
+  if (!mongoUri.startsWith("mongodb://") && !mongoUri.startsWith("mongodb+srv://")) {
+    throw new Error(
+      "MONGODB_URI must be a MongoDB connection string beginning with mongodb:// or mongodb+srv://.",
+    );
+  }
   if (!jwtSecret || jwtSecret.length < 32) {
     throw new Error("JWT_SECRET must be set to at least 32 characters.");
   }

@@ -42,7 +42,7 @@ The included `render.yaml` configures one Render web service to serve both the s
 
 1. Create a MongoDB Atlas database and a database user with a strong password. Render's free web services do not provide static outbound IPs. For a free deployment, Atlas network access may need `0.0.0.0/0`, which permits network connections from any IP; protect the database with a strong unique password, least-privilege database user, and TLS. For stricter IP allowlisting, use a hosting plan with fixed egress IPs.
 2. Push this project to GitHub, then in Render choose **New → Blueprint** and select the repository containing `render.yaml`.
-3. In the Blueprint environment prompt, set `MONGODB_URI` to the Atlas connection URI. Render generates `JWT_SECRET`. Do not commit these secrets.
+3. In the Blueprint environment prompt, set `MONGODB_URI` to the full Atlas connection URI (it must begin with `mongodb+srv://` or `mongodb://`; do not enter only the database password). Render generates `JWT_SECRET`. Do not commit these secrets.
 4. Deploy the Blueprint and wait for the service health check to pass. The Render URL serves the storefront; API endpoints use the same domain under `/api`.
 5. To seed the catalog and provision an administrator, set `MONGODB_URI`, `ADMIN_EMAIL`, and a strong `ADMIN_PASSWORD` (10–72 characters) in your local, git-ignored `.env`, then run `npm run seed` from this project. Confirm products appear at `/api/products`, then sign in through `/api/auth/login` with the configured admin credentials and test a protected route.
 6. Run `npm test` locally before pushing changes. After deployment, verify the Render URL, `/api/health`, product listing, registration/login, cart, and order flows. Order placement requires Atlas transaction support.
